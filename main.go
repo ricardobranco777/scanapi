@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
 	"sync"
@@ -107,17 +108,25 @@ func init() {
 }
 
 func main() {
-	var headerValues []string
-	var timeoutInt int
+	var opts struct {
+		header  []string
+		timeout int
+		version bool
+	}
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] URL\n", os.Args[0])
 		flag.PrintDefaults()
 	}
-	flag.IntVarP(&timeoutInt, "timeout", "t", 60, "Timeout")
-	flag.StringSliceVarP(&headerValues, "header", "H", nil, "HTTP header (may be specified multiple times")
-
+	flag.IntVarP(&opts.timeout, "timeout", "t", 60, "Timeout")
+	flag.StringSliceVarP(&opts.header, "header", "H", nil, "HTTP header (may be specified multiple times")
+	flag.BoolVarP(&opts.version, "version", "", false, "print version and exit")
 	flag.Parse()
+
+	if opts.version {
+		fmt.Printf("scanapi v%s %v %s/%s\n", version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+		os.Exit(0)
+	}
 	if flag.NArg() != 1 {
 		flag.Usage()
 		os.Exit(1)
@@ -129,7 +138,7 @@ func main() {
 	headers := map[string]string{
 		"User-Agent": "scanapi/" + version,
 	}
-	for _, header := range headerValues {
+	for _, header := range opts.header {
 		parts := strings.SplitN(header, ":", 2)
 		if len(parts) != 2 {
 			log.Printf("Invalid header: %s", header)
@@ -138,7 +147,7 @@ func main() {
 		headers[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 	}
 
-	timeout := time.Duration(timeoutInt)
+	timeout := time.Duration(opts.timeout)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
