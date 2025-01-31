@@ -15,7 +15,8 @@ Services supported:
 ```
 Usage: ./scanapi [OPTIONS] URL
   -H, --header strings   HTTP header (may be specified multiple times
-  -t, --timeout int      Timeout (default 60)
+  -t, --timeout int      timeout (default 60)
+      --version          print version and exit
 ```
 
 ## Examples

@@ -118,8 +118,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] URL\n", os.Args[0])
 		flag.PrintDefaults()
 	}
-	flag.IntVarP(&opts.timeout, "timeout", "t", 60, "Timeout")
 	flag.StringSliceVarP(&opts.header, "header", "H", nil, "HTTP header (may be specified multiple times")
+	flag.IntVarP(&opts.timeout, "timeout", "t", 60, "timeout")
 	flag.BoolVarP(&opts.version, "version", "", false, "print version and exit")
 	flag.Parse()
 
