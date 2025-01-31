@@ -19,16 +19,17 @@ import flag "github.com/spf13/pflag"
 const version = "0.1.0"
 
 var services = map[string]struct {
-	Method string
-	Route  string
+	Method     string
+	Route      string
+	VersionKey string
 }{
-	"Bugzilla":     {http.MethodGet, "rest/version"},
-	"Distribution": {http.MethodGet, "v2/"},
-	"Gitea":        {http.MethodGet, "api/v1/version"},
-	"GitLabv4":     {http.MethodGet, "api/v4/version"},
-	"Jira":         {http.MethodGet, "rest/api/2/serverInfo"},
-	"Pagure":       {http.MethodGet, "api/0/version"},
-	"RedMine":      {http.MethodHead, "issues.json"},
+	"Bugzilla":        {http.MethodGet, "rest/version", "version"},
+	"Docker Registry": {http.MethodGet, "v2/_catalog", ""},
+	"Gitea":           {http.MethodGet, "api/v1/version", "version"},
+	"GitLabv4":        {http.MethodGet, "api/v4/version", "version"},
+	"Jira":            {http.MethodGet, "rest/api/2/serverInfo", "version"},
+	"Pagure":          {http.MethodGet, "api/0/version", "version"},
+	"RedMine":         {http.MethodGet, "issues.json", ""},
 }
 
 var validStatuses = []int{http.StatusOK, http.StatusUnauthorized}
@@ -62,15 +63,25 @@ func checkVersion(ctx context.Context, client *http.Client, headers map[string]s
 	}
 
 	if api.Method == http.MethodGet {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
+		buf := make([]byte, 1024)
+		n, err := resp.Body.Read(buf)
+		if err != nil && err != io.EOF {
 			return err
 		}
-		fmt.Printf("%s: %s\n", service, string(body))
+		body := strings.TrimSpace(string(buf[:n]))
+		// Skip non JSON
+		if !strings.HasPrefix(body, "{") {
+			return nil
+		}
+		if api.VersionKey != "" {
+			body = strings.ReplaceAll(body, "\n", "")
+			fmt.Printf("%s: %s\n", service, body)
+		} else {
+			fmt.Printf("%s\n", service)
+		}
 	} else {
 		fmt.Printf("%s\n", service)
 	}
-
 	return nil
 }
 
