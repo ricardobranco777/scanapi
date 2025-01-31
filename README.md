@@ -1,5 +1,5 @@
 
-scanapi is an API service scanner
+scanapi is an API service scanner that uses Goroutines for faster service discovery.
 
 Services supported:
 - Bugzilla
