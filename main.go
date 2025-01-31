@@ -29,7 +29,7 @@ var services = map[string]struct {
 	"GitLabv4":        {http.MethodGet, "api/v4/version", "version"},
 	"Jira":            {http.MethodGet, "rest/api/2/serverInfo", "version"},
 	"Pagure":          {http.MethodGet, "api/0/version", "version"},
-	"RedMine":         {http.MethodGet, "issues.json", ""},
+	"Redmine":         {http.MethodGet, "issues.json", ""},
 }
 
 var validStatuses = []int{http.StatusOK, http.StatusUnauthorized}
