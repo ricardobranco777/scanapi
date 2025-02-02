@@ -11,8 +11,9 @@ import (
 	"runtime"
 	"slices"
 	"strings"
-	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 import flag "github.com/spf13/pflag"
@@ -155,15 +156,18 @@ func main() {
 		Timeout: timeout,
 	}
 
-	var wg sync.WaitGroup
+	g, ctx := errgroup.WithContext(ctx)
+	g.SetLimit(min(10, len(services)))
 
 	for service := range services {
-		wg.Add(1)
-		go func(service string) {
-			defer wg.Done()
-			checkVersion(ctx, client, headers, url, service)
-		}(service)
+		service := service
+		g.Go(func() error {
+			err := checkVersion(ctx, client, headers, url, service)
+			return err
+		})
 	}
-
-	wg.Wait()
+	if err := g.Wait(); err != nil {
+		log.Print(err)
+		os.Exit(1)
+	}
 }
