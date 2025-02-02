@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"os"
 	"runtime"
 	"slices"
@@ -132,7 +133,11 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	url := flag.Args()[0]
+
+	u, err := url.ParseRequestURI(flag.Args()[0])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	debug = os.Getenv("DEBUG") != ""
 
@@ -161,7 +166,7 @@ func main() {
 	for service := range services {
 		service := service
 		g.Go(func() error {
-			err := checkVersion(ctx, client, headers, url, service)
+			err := checkVersion(ctx, client, headers, u.String(), service)
 			return err
 		})
 	}
