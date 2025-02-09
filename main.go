@@ -21,6 +21,8 @@ import flag "github.com/spf13/pflag"
 
 const version = "0.2.0"
 
+const maxBodySize = 1024
+
 var services = map[string]struct {
 	Method     string
 	Route      string
@@ -66,12 +68,12 @@ func checkVersion(ctx context.Context, client *http.Client, headers map[string]s
 	}
 
 	if api.Method == http.MethodGet {
-		buf := make([]byte, 1024)
-		n, err := resp.Body.Read(buf)
-		if err != nil && err != io.EOF {
+		limitedReader := io.LimitReader(resp.Body, maxBodySize)
+		buf, err := io.ReadAll(limitedReader)
+		if err != nil {
 			return err
 		}
-		body := strings.TrimSpace(string(buf[:n]))
+		body := strings.TrimSpace(string(buf))
 		// Skip non JSON
 		if !strings.HasPrefix(body, "{") {
 			return nil
