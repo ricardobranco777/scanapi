@@ -17,15 +17,15 @@ $(BIN): *.go
 
 .PHONY: test
 test:
-	@$(GO) vet
-	@staticcheck
+	$(GO) vet
+	staticcheck
 
 .PHONY: clean
 clean:
-	@$(GO) clean
+	$(GO) clean
 
 .PHONY: gen
 gen:
-	@rm -f go.mod go.sum
-	@$(GO) mod init $(BIN)
-	@$(GO) mod tidy
+	$(RM) go.mod go.sum
+	$(GO) mod init $(BIN)
+	$(GO) mod tidy
