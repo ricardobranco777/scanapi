@@ -29,7 +29,7 @@ var services = map[string]struct {
 	VersionKey string
 }{
 	"Bugzilla":        {http.MethodGet, "rest/version", "version"},
-	"Docker Registry": {http.MethodGet, "v2/_catalog", ""},
+	"Docker Registry": {http.MethodGet, "v2/_catalog?n=1", ""},
 	"Gitea":           {http.MethodGet, "api/v1/version", "version"},
 	"GitLabv4":        {http.MethodGet, "api/v4/version", "version"},
 	"Jira":            {http.MethodGet, "rest/api/2/serverInfo", "version"},
