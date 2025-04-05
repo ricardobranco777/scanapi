@@ -11,6 +11,7 @@ else
 CGO_ENABLED ?= 0
 endif
 
+.PHONY: all
 all:	$(BIN)
 
 $(BIN): *.go
