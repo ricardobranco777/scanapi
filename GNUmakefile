@@ -1,6 +1,7 @@
 BIN	= scanapi
 
-GO	:= go
+GO	?= go
+DOCKER	?= docker
 
 # https://github.com/golang/go/issues/64875
 arch := $(shell uname -m)
@@ -14,6 +15,14 @@ all:	$(BIN)
 
 $(BIN): *.go
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -trimpath -ldflags="-s -w -buildid=" -buildmode=pie
+
+.PHONY: build
+build:
+	image=$$( $(DOCKER) build -q . ) && \
+	container=$$( $(DOCKER) create $$image ) && \
+	$(DOCKER) cp $$container:/usr/local/bin/$(BIN) . && \
+	$(DOCKER) rm -vf $$container && \
+	$(DOCKER) rmi $$image
 
 .PHONY: test
 test:
