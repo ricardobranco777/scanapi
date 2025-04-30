@@ -1,4 +1,4 @@
-module scanapi
+module github.com/ricardobranco777/scanapi
 
 go 1.22
 
