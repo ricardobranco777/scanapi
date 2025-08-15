@@ -1,7 +1,8 @@
 module github.com/ricardobranco777/scanapi
 
-go 1.22
+go 1.24.0
 
-require github.com/spf13/pflag v1.0.6
-
-require golang.org/x/sync v0.10.0 // indirect
+require (
+	github.com/spf13/pflag v1.0.7
+	golang.org/x/sync v0.16.0
+)
