@@ -1,3 +1,4 @@
+![Build Status](https://github.com/ricardobranco777/scanapi/actions/workflows/ci.yml/badge.svg)
 
 scanapi is an API service scanner that uses Goroutines for faster service discovery.
 
