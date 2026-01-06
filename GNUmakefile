@@ -3,26 +3,14 @@ BIN	= scanapi
 GO	?= go
 DOCKER	?= podman
 
-# https://github.com/golang/go/issues/64875
-arch := $(shell uname -m)
-ifeq ($(arch),s390x)
-CGO_ENABLED := 1
-else
 CGO_ENABLED ?= 0
-endif
-
-# FreeBSD: https://github.com/golang/go/issues/64875
-# OpenBSD: https://github.com/golang/go/issues/59866
-os := $(shell uname -s)
-ifeq ($(os),Linux)
-FLAGS   := -buildmode=pie
-endif
+LDFLAGS	?= -s -w -buildid= -extldflags "-static-pie"
 
 .PHONY: all
 all:	$(BIN)
 
-$(BIN): *.go
-	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -trimpath -ldflags="-s -w -buildid=" $(FLAGS)
+$(BIN): *.go GNUmakefile
+	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -trimpath -ldflags="$(LDFLAGS)"
 
 .PHONY: build
 build:
