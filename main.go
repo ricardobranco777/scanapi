@@ -166,7 +166,6 @@ func main() {
 	g.SetLimit(min(10, len(services)))
 
 	for service := range services {
-		service := service
 		g.Go(func() error {
 			err := checkVersion(ctx, client, headers, u.String(), service)
 			return err
